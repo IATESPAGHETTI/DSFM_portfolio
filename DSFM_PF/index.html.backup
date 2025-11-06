@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INDmoney - Indian Stock Market</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Lightweight Charts for Interactive Trading -->
+    <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
+</head>
+<body>
+    <!-- Global Header -->
+    <header class="global-header">
+        <div class="header-container">
+            <!-- Left: Logo and Search -->
+            <div class="header-left">
+                <div class="logo">
+                    <i class="fas fa-chart-line"></i>
+                    <span>INDmoney</span>
+                </div>
+                <div class="global-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search stocks, mutual funds...">
+                </div>
+            </div>
+            
+            <!-- Center: Main Navigation -->
+            <nav class="main-nav">
+                <a href="#dashboard" class="nav-link active">Dashboard</a>
+                <a href="#indstocks" class="nav-link">INDstocks</a>
+                <a href="#mutual-funds" class="nav-link">Mutual Funds</a>
+                <a href="#fixed-deposits" class="nav-link">Fixed Deposits</a>
+                <a href="#analysis" class="nav-link">Analysis</a>
+            </nav>
+            
+            <!-- Right: Utilities -->
+            <div class="header-right">
+                <button class="icon-btn" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge-dot"></span>
+                </button>
+                <button class="icon-btn" title="Rewards">
+                    <i class="fas fa-gift"></i>
+                </button>
+                <button class="profile-btn" id="profileBtn">
+                    <div class="profile-avatar">DJ</div>
+                </button>
+                <button class="icon-btn menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Layout -->
+    <div class="dashboard-container">
+        <!-- Main Content (Left Column) -->
+        <main class="main-content">
+            <!-- My Assets Card -->
+            <div class="assets-card">
+                <div class="assets-header">
+                    <h2>My Assets</h2>
+                    <button class="view-all-btn">View All <i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="total-assets">
+                    <span class="assets-label">Total Value</span>
+                    <h1 class="assets-value">₹100.00</h1>
+                </div>
+            </div>
+
+            <!-- Indian Stocks Onboarding Card -->
+            <div class="onboarding-card">
+                <div class="onboarding-illustration">
+                    <i class="fas fa-coins"></i>
+                    <i class="fas fa-chart-line"></i>
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+                <h2>Begin Your Journey with Indian Stocks</h2>
+                <p class="greeting">Welcome Deepu</p>
+                <p class="subtext">You're all set to start your investment journey. Open your demat account and begin trading today!</p>
+                <button class="cta-button">Start Investing</button>
+            </div>
+
+            <!-- Available Balance Component -->
+            <div class="balance-card">
+                <h3>Available Balance</h3>
+                <div class="balance-tabs">
+                    <button class="balance-tab">Banks</button>
+                    <button class="balance-tab active">INDstocks</button>
+                </div>
+                <div class="balance-content">
+                    <div class="balance-amount">
+                        <span class="balance-label">Balance</span>
+                        <h2>₹100.00</h2>
+                    </div>
+                    <button class="add-money-btn">
+                        <i class="fas fa-plus"></i> Add Money
+                    </button>
+                </div>
+            </div>
+
+            <!-- Market Indices Quick View -->
+            <div class="indices-quick-view">
+                <h3>Market Today</h3>
+                <div class="indices-list">
+                    <div class="index-item">
+                        <div class="index-info">
+                            <span class="index-name">NIFTY 50</span>
+                            <span class="index-exchange">NSE</span>
+                        </div>
+                        <div class="index-data">
+                            <span class="index-price" id="nifty-price">19,542.35</span>
+                            <span class="index-change positive" id="nifty-change-display">+87.25 (0.45%)</span>
+                        </div>
+                    </div>
+                    <div class="index-item">
+                        <div class="index-info">
+                            <span class="index-name">SENSEX</span>
+                            <span class="index-exchange">BSE</span>
+                        </div>
+                        <div class="index-data">
+                            <span class="index-price" id="sensex-price">65,432.10</span>
+                            <span class="index-change positive" id="sensex-change-display">+234.50 (0.36%)</span>
+                        </div>
+                    </div>
+                    <div class="index-item">
+                        <div class="index-info">
+                            <span class="index-name">BANK NIFTY</span>
+                            <span class="index-exchange">NSE</span>
+                        </div>
+                        <div class="index-data">
+                            <span class="index-price" id="banknifty-price">44,123.80</span>
+                            <span class="index-change negative" id="banknifty-change-display">-156.30 (-0.35%)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Sidebar (Right Column) -->
+        <aside class="sidebar">
+            <!-- Supercharge Trading Card -->
+            <div class="promo-card">
+                <div class="promo-image">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <h3>Supercharge your trading</h3>
+                <p>Get advanced tools, real-time data, and expert insights to maximize your returns</p>
+                <button class="explore-btn">Explore <i class="fas fa-arrow-right"></i></button>
+            </div>
+
+            <!-- Trust Badge -->
+            <div class="trust-badge">
+                <i class="fas fa-lock"></i>
+                <span>Your data is 100% safe</span>
+            </div>
+        </aside>
+    </div>
+
+    <!-- ML Analysis Dashboard (Hidden by default) -->
+    <div class="analysis-dashboard" id="analysisDashboard">
+        <div class="analysis-header">
+            <div class="analysis-title-row">
+                <div>
+                    <h1><i class="fas fa-brain"></i> Market Intelligence & Analytics</h1>
+                    <p class="analysis-subtitle">AI-powered market regime analysis and volatility forecasting</p>
+                </div>
+                <div class="market-selector">
+                    <label for="marketSelect">Select Market:</label>
+                    <select id="marketSelect" class="market-select-dropdown">
+                        <option value="NIFTY_50">NIFTY 50</option>
+                        <option value="SENSEX">SENSEX</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="analysis-grid">
+            <!-- K-Means Market Regime Card -->
+            <div class="analysis-card regime-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-project-diagram"></i> Market Regime Analysis</h2>
+                    <span class="badge-ml">K-Means Clustering</span>
+                </div>
+                <div class="regime-status" id="regimeStatus">
+                    <div class="regime-indicator">
+                        <div class="regime-icon">📊</div>
+                        <div class="regime-label">Current Market Regime</div>
+                        <div class="regime-value" id="currentRegime">Analyzing...</div>
+                    </div>
+                </div>
+                <div class="regime-chart-container">
+                    <canvas id="regimeChart"></canvas>
+                </div>
+                <div class="regime-features" id="regimeFeatures">
+                    <h3>Market Features</h3>
+                    <div class="feature-grid">
+                        <div class="feature-item">
+                            <span class="feature-label">Returns</span>
+                            <span class="feature-value" id="featureReturns">-</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-label">Volatility</span>
+                            <span class="feature-value" id="featureVolatility">-</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-label">Volume</span>
+                            <span class="feature-value" id="featureVolume">-</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-label">RSI</span>
+                            <span class="feature-value" id="featureRSI">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GARCH Volatility Forecast Card -->
+            <div class="analysis-card volatility-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-area"></i> Volatility Forecast</h2>
+                    <span class="badge-ml">GARCH(1,1) Model</span>
+                </div>
+                <div class="volatility-summary">
+                    <div class="vol-stat">
+                        <div class="vol-label">Current Volatility</div>
+                        <div class="vol-value" id="currentVol">-</div>
+                    </div>
+                    <div class="vol-stat">
+                        <div class="vol-label">30-Day Forecast</div>
+                        <div class="vol-value" id="forecastVol">-</div>
+                    </div>
+                    <div class="vol-stat">
+                        <div class="vol-label">Trend</div>
+                        <div class="vol-trend" id="volTrend">-</div>
+                    </div>
+                </div>
+                <div class="volatility-chart-container">
+                    <canvas id="volatilityChart"></canvas>
+                </div>
+                <div class="volatility-insights" id="volatilityInsights">
+                    <h3>Risk Assessment</h3>
+                    <div class="insight-item">
+                        <i class="fas fa-info-circle"></i>
+                        <span id="riskLevel">Calculating risk profile...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Combined Market Insights -->
+            <div class="analysis-card insights-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-lightbulb"></i> AI Insights</h2>
+                    <span class="badge-live">LIVE</span>
+                </div>
+                <div class="insights-content" id="insightsContent">
+                    <div class="insight-block">
+                        <h3>📈 Market Sentiment</h3>
+                        <p id="sentimentText">Analyzing market conditions...</p>
+                    </div>
+                    <div class="insight-block">
+                        <h3>⚠️ Risk Factors</h3>
+                        <ul id="riskFactors">
+                            <li>Loading risk analysis...</li>
+                        </ul>
+                    </div>
+                    <div class="insight-block">
+                        <h3>💡 Recommendations</h3>
+                        <ul id="recommendations">
+                            <li>Generating recommendations...</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="refresh-controls">
+                    <button class="refresh-btn" id="refreshAnalytics">
+                        <i class="fas fa-sync-alt"></i> Refresh Analytics
+                    </button>
+                    <span class="last-updated" id="lastUpdated">Last updated: Never</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INDstocks Trading Terminal (Hidden by default) -->
+    <div class="trading-interface" id="tradingInterface">
+        <!-- Top Market Ticker Bar -->
+        <div class="market-ticker-bar">
+            <div class="market-ticker-item">
+                <span class="ticker-label">NIFTY 50</span>
+                <span class="ticker-price positive">41.4</span>
+                <div class="ticker-details">
+                    <span class="ticker-value">25919.05</span>
+                    <span class="ticker-change positive">▲ 0.16%</span>
+                </div>
+            </div>
+            <div class="market-ticker-item">
+                <span class="ticker-label">SENSEX</span>
+                <span class="ticker-price positive">185.69</span>
+                <div class="ticker-details">
+                    <span class="ticker-value">84591.26</span>
+                    <span class="ticker-change positive">▲ 0.22%</span>
+                </div>
+            </div>
+            <div class="market-actions">
+                <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="market-dropdown-btn">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Terminal Layout -->
+        <div class="terminal-layout">
+            <!-- Left navigation removed to provide a full-width chart area -->
+
+            <!-- Main Chart Container -->
+            <div class="terminal-main">
+                <!-- Chart Header with Tabs -->
+                <div class="chart-header-tabs">
+                    <button class="chart-header-tab">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <button class="chart-header-tab active">Chart</button>
+                    <button class="chart-header-tab">Overview</button>
+                </div>
+
+                <!-- Chart Top Bar -->
+                <div class="chart-top-bar">
+                    <div class="chart-controls-left">
+                        <!-- Stock Selector Button -->
+                        <div class="stock-selector-wrapper">
+                            <button class="stock-selector-btn" id="stockSearchBtn">
+                                <i class="fas fa-chevron-right" id="stockSelectorIcon"></i>
+                            </button>
+                            
+                            <!-- Stock Info Display -->
+                            <div class="stock-info-display">
+                                <div class="stock-name-line">
+                                    <span class="stock-symbol-text" id="currentStockName">NIFTY 50</span>
+                                    <span class="stock-price-text" id="currentStockPrice">₹25,855.65</span>
+                                    <span class="stock-change-text negative" id="currentStockChange">-22.20 ▼ -0.09%</span>
+                                </div>
+                            </div>
+                            
+                            <div class="stock-search-container">
+                            
+                            <!-- Dropdown Search Panel -->
+                            <div class="stock-search-dropdown" id="stockSearchDropdown">
+                                <div class="search-input-wrapper">
+                                    <i class="fas fa-search"></i>
+                                    <input 
+                                        type="text" 
+                                        id="stockSearchInput" 
+                                        placeholder="Search Stocks, F&O"
+                                        autocomplete="off"
+                                    />
+                                </div>
+                                
+                                <!-- Market Filter Tabs -->
+                                <div class="market-filter-tabs">
+                                    <button class="market-tab active" data-market="all">All</button>
+                                    <button class="market-tab" data-market="NIFTY">NIFTY 50</button>
+                                    <button class="market-tab" data-market="SENSEX">SENSEX</button>
+                                </div>
+                                
+                                <!-- Stock List -->
+                                <div class="stock-list-container" id="stockListContainer">
+                                    <!-- Dynamically populated -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chart Type Selector -->
+                        <div class="chart-type-selector">
+                            <button class="chart-type-btn" id="chartTypeBtn">
+                                <i class="fas fa-chart-bar"></i>
+                                <span>Candles</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="chart-type-dropdown" id="chartTypeDropdown">
+                                <button class="chart-type-option" data-type="candlestick">
+                                    <i class="fas fa-chart-bar"></i> Candles
+                                </button>
+                                <button class="chart-type-option" data-type="bars">
+                                    <i class="fas fa-chart-bar"></i> Bars
+                                </button>
+                                <button class="chart-type-option" data-type="line">
+                                    <i class="fas fa-chart-line"></i> Line
+                                </button>
+                                <button class="chart-type-option" data-type="area">
+                                    <i class="fas fa-chart-area"></i> Area
+                                </button>
+                                <button class="chart-type-option" data-type="hollow">
+                                    <i class="far fa-chart-bar"></i> Hollow candles
+                                </button>
+                                <button class="chart-type-option" data-type="heikin-ashi">
+                                    <i class="fas fa-chart-bar"></i> Heikin Ashi
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Timeframe Buttons -->
+                        <div class="timeframe-buttons">
+                            <button class="timeframe-btn">5m</button>
+                            <button class="timeframe-btn">15m</button>
+                            <button class="timeframe-btn">1h</button>
+                            <button class="timeframe-btn active">1d</button>
+                        </div>
+
+                        <!-- Indicators Button -->
+                        <button class="indicators-btn">
+                            <i class="fas fa-wave-square"></i>
+                            <span>Indicators</span>
+                        </button>
+
+                        <!-- Undo/Redo -->
+                        <div class="undo-redo-buttons">
+                            <button class="undo-btn" title="Undo">
+                                <i class="fas fa-undo"></i>
+                            </button>
+                            <button class="redo-btn" title="Redo">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="chart-controls-right">
+                        <!-- Buy/Sell Buttons -->
+                        <button class="buy-btn">B</button>
+                        <button class="sell-btn">S</button>
+                        
+                        <!-- Action Buttons -->
+                        <button class="action-btn" title="Settings">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                        <button class="action-btn" title="Screenshot">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                        <button class="action-btn" title="Share">
+                            <i class="fas fa-share-nodes"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bottom timeframe bar removed (timeframe buttons are placed in the top controls) -->
+
+                <!-- Chart Canvas with OHLC Overlay -->
+                <div class="chart-canvas-container">
+                    <!-- OHLC Tooltip (Top-Left) -->
+                    <div class="ohlc-tooltip" id="ohlcTooltip">
+                        <div class="ohlc-date" id="ohlc-date">NIFTY 50 · 31.10.2025 10:15</div>
+                        <div class="ohlc-values">
+                            <span class="ohlc-item">O <span id="ohlc-open" class="ohlc-value">25876.86</span></span>
+                            <span class="ohlc-item">H <span id="ohlc-high" class="ohlc-value">25876.80</span></span>
+                            <span class="ohlc-item">L <span id="ohlc-low" class="ohlc-value">25856.65</span></span>
+                            <span class="ohlc-item">C <span id="ohlc-close" class="ohlc-value">25856.65</span></span>
+                            <span class="ohlc-volume">Volume <span id="ohlc-volume-value">0.00</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Chart Canvas -->
+                    <div id="tradingChart" class="trading-chart-canvas"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="fab" title="Get help">
+        <i class="fas fa-headset"></i>
+    </button>
+
+    <!-- Profile Menu Overlay -->
+    <div class="profile-overlay" id="profileOverlay">
+        <div class="profile-menu">
+            <div class="profile-menu-header">
+                <div class="profile-avatar-large">DJ</div>
+                <div class="profile-info">
+                    <h3>Deepu Ja...</h3>
+                    <a href="#" class="view-profile-link">View Profile</a>
+                </div>
+                <button class="close-menu" id="closeMenu">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <nav class="profile-nav">
+                <a href="#" class="profile-nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>My Family Members</span>
+                </a>
+                <a href="#" class="profile-nav-item">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Deepu James (Admin)</span>
+                </a>
+                <a href="#" class="profile-nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>James's Family Dashboard</span>
+                </a>
+                <a href="#" class="profile-nav-item">
+                    <i class="fas fa-key"></i>
+                    <span>My Permissions</span>
+                </a>
+                <a href="#" class="profile-nav-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Tax Reports & Documents</span>
+                </a>
+                <a href="#" class="profile-nav-item">
+                    <i class="fas fa-rupee-sign"></i>
+                    <span>Pricing</span>
+                </a>
+                <a href="#" class="profile-nav-item">
+                    <i class="fas fa-balance-scale"></i>
+                    <span>Legal</span>
+                </a>
+                <a href="#" class="profile-nav-item">
+                    <i class="fas fa-calculator"></i>
+                    <span>Calculators</span>
+                </a>
+            </nav>
+            
+            <div class="profile-menu-footer">
+                <button class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+                <button class="delete-account-btn">
+                    <i class="fas fa-trash"></i>
+                    <span>Delete Account</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
