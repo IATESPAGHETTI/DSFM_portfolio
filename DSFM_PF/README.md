@@ -7,9 +7,11 @@ A complete full-stack financial analysis platform inspired by INDmoney, featurin
 - 📊 **Real-Time Data Streaming** - WebSocket updates every 2 seconds
 - 🤖 **GARCH(1,1) Volatility Forecasting** - 30-day ahead predictions
 - 📈 **K-Means Regime Detection** - Bull/Bear/High Volatility/Consolidation classification
+- 🧠 **FinBERT Sentiment Analysis** - AI-powered news sentiment for stocks
 - 💹 **Interactive Trading Charts** - Zoom, pan, crosshair with Lightweight Charts
 - 🎨 **INDmoney-Style UI** - Clean, modern interface
 - 🔄 **Live Price Updates** - Dashboard and trading interface sync
+- 📰 **News Sentiment Modal** - Real-time market mood analysis with top movers
 
 ## 🏗️ Architecture
 ```
@@ -20,16 +22,17 @@ A complete full-stack financial analysis platform inspired by INDmoney, featurin
 │   │   │   ├── assets.py      # Asset & historical data
 │   │   │   ├── auth.py        # Authentication
 │   │   │   ├── portfolio.py   # Portfolio management
+│   │   │   ├── sentiment.py   # FinBERT news sentiment
 │   │   │   └── websocket.py   # Real-time streaming
 │   │   ├── core/
 │   │   │   ├── config.py      # Configuration
-│   │   │   ├── database.py    # PostgreSQL connection
+│   │   │   ├── database.py    # SQLite connection
 │   │   │   └── security.py    # JWT & hashing
 │   │   ├── models/            # SQLAlchemy models
 │   │   ├── schemas/           # Pydantic schemas
 │   │   └── services/
-│   │       └── finnhub_client.py  # Market data API
-│   ├── Dockerfile
+│   │       ├── finnhub_client.py      # Market data API
+│   │       └── sentiment_analyzer.py  # FinBERT analyzer
 │   └── requirements.txt
 │
 ├── Frontend Files (HTML/CSS/JS)
@@ -38,58 +41,88 @@ A complete full-stack financial analysis platform inspired by INDmoney, featurin
 │   ├── script.js              # WebSocket & charts
 │   └── serve.py               # HTTP server
 │
-├── docker-compose.yml         # Orchestration
 └── README.md                  # This file
 ```
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Docker Desktop installed
-- Python 3.11+ installed
-- 8GB RAM minimum
-- Internet connection for API calls
+- **Python 3.11+** installed
+- **8GB RAM minimum** (for FinBERT model)
+- **Internet connection** for API calls and model download
+- **Windows PowerShell** or any terminal
 
-### Step 1: Start Backend Services
+### Quick Installation (2 Minutes)
+
+#### Step 1: Install Python Dependencies
 ```powershell
-# Navigate to project directory
+# Navigate to backend directory
+cd C:\Users\ASUS\Desktop\DSFM_PF\indmoney-api
+
+# Install all required packages
+pip install -r requirements.txt
+```
+
+**Packages installed:**
+- `fastapi` - Web framework
+- `uvicorn` - ASGI server
+- `sqlalchemy` - Database ORM
+- `scikit-learn` - K-Means clustering
+- `arch` - GARCH forecasting
+- `transformers` - FinBERT model
+- `torch` - PyTorch for ML
+- `requests` - HTTP client for APIs
+- And more...
+
+##### Step 2: Start Backend Server
+```powershell
+# Run from indmoney-api directory
+cd C:\Users\ASUS\Desktop\DSFM_PF\indmoney-api
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+**What you'll see:**
+```
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process
+INFO:     Application startup complete.
+```
+
+Backend is now running on **port 8000** with SQLite database!
+
+##### Step 3: Start Frontend Server
+```powershell
+# Open a NEW terminal window
 cd C:\Users\ASUS\Desktop\DSFM_PF
-
-# Start all Docker containers
-docker-compose up -d
-```
-
-This starts:
-- **PostgreSQL** (port 5432) - Database
-- **Redis** (port 6379) - Cache
-- **FastAPI** (port 8000) - Backend API
-
-### Step 2: Verify Backend
-```powershell
-# Check if containers are running
-docker ps
-
-# Test API health
-Invoke-WebRequest -Uri "http://localhost:8000/health" -UseBasicParsing
-# Expected: {"status":"healthy"}
-```
-
-### Step 3: Start Frontend Server
-```powershell
-# Start Python HTTP server
-python -m http.server 3000
-
-# Or use the serve.py script
 python serve.py
 ```
 
-### Step 4: Open Application
+**What you'll see:**
+```
+🚀 INDmoney Frontend Server
+📡 Serving at: http://localhost:3000
+📂 Directory: C:\Users\ASUS\Desktop\DSFM_PF
+✨ Open http://localhost:3000 in your browser
+```
+
+Frontend is now running on **port 3000**!
+
+#### Step 4: Open Application
 Open your browser and navigate to:
 ```
 http://localhost:3000
 ```
 
 **⚠️ IMPORTANT**: You MUST use `http://localhost:3000`, NOT `file:///` to open `index.html`. WebSocket connections require HTTP protocol.
+
+### 🎉 You're Ready!
+- Main dashboard: http://localhost:3000
+- API documentation: http://localhost:8000/docs
+- Health check: http://localhost:8000/health
+
+**First time using NEWS sentiment?** The FinBERT model (438MB) will download on first click. This takes 10-20 seconds, then it's instant!
+
+---
 
 ## 📋 Available Endpoints
 
@@ -98,6 +131,12 @@ http://localhost:3000
 #### Analytics
 - `GET /api/v1/analytics/market-regime?symbol=NIFTY_50` - K-Means classification
 - `GET /api/v1/analytics/volatility-forecast?symbol=NIFTY_50` - GARCH forecast
+
+#### Sentiment Analysis
+- `GET /api/v1/sentiment/stock/{symbol}` - Get sentiment for specific stock
+- `GET /api/v1/sentiment/nifty50` - Sentiment analysis for all NIFTY 50 stocks
+- `GET /api/v1/sentiment/market-overview` - Market sentiment summary with top movers
+- `POST /api/v1/sentiment/refresh-nifty50` - Trigger background refresh of all stocks
 
 #### Assets
 - `GET /assets` - List all assets
@@ -125,6 +164,18 @@ http://localhost:3000
 - Pan: Click and drag
 - Hover: See OHLC tooltip
 - 30-day historical data
+- Toggle between NIFTY 50 and SENSEX
+- Stock selector with filtered stock lists
+- **NEWS Button**: View AI-powered sentiment analysis
+
+### News Sentiment Analysis
+- Click **NEWS** button in trading interface
+- View market overview with overall sentiment score
+- See sentiment breakdown (positive/negative/neutral)
+- Top bullish and bearish stocks
+- Individual stock sentiment with confidence scores
+- Powered by FinBERT (ProsusAI) and Finnhub news API
+- First load takes 10-20 seconds (model loading), then instant
 
 ### Analysis Dashboard
 - **K-Means Market Regime**: Bar chart showing 6 features (Vol, Returns, Momentum, Trend, RSI, Volume)
@@ -139,45 +190,48 @@ http://localhost:3000
 
 **Solution**:
 1. Ensure you're accessing via `http://localhost:3000` (NOT `file:///`)
-2. Check API is running: `docker ps`
-3. Check logs: `docker-compose logs api`
-4. Restart services: `docker-compose restart api`
+2. Check backend is running on port 8000
+3. Check terminal logs for errors
+4. Restart backend server
 
 ### Analytics Showing Errors
 **Problem**: Analysis dashboard shows "Failed to load"
 
 **Solution**:
-1. Restart API: `docker-compose restart api`
+1. Restart backend server
 2. Test endpoint directly:
    ```powershell
    Invoke-WebRequest -Uri "http://localhost:8000/api/v1/analytics/market-regime?symbol=NIFTY_50"
    ```
 
 ### Ports Already in Use
-**Problem**: Docker fails with "port is already allocated"
+**Problem**: "Address already in use" error when starting servers
 
 **Solution**:
-1. Stop conflicting services
-2. Or modify ports in `docker-compose.yml`:
-   ```yaml
-   ports:
-     - "8001:8000"  # Change 8000 to 8001
+1. For backend (port 8000):
+   ```powershell
+   netstat -ano | findstr :8000
+   Stop-Process -Id <PID> -Force
+   ```
+2. For frontend (port 3000):
+   ```powershell
+   netstat -ano | findstr :3000
+   Stop-Process -Id <PID> -Force
    ```
 
-### Database Connection Errors
-**Problem**: API logs show "connection refused" to PostgreSQL
+### FinBERT Model Loading Slow
+**Problem**: First time clicking NEWS button takes 10-20 seconds
+
+**Solution**: This is normal! The FinBERT model (438MB) loads on first request. Subsequent requests will be instant. The model downloads once and is cached locally.
+
+### Sentiment Analysis Not Working
+**Problem**: NEWS button shows error or doesn't load
 
 **Solution**:
-```powershell
-# Restart database
-docker-compose restart db
-
-# Wait 5 seconds for DB to initialize
-Start-Sleep -Seconds 5
-
-# Restart API
-docker-compose restart api
-```
+1. Ensure backend server is running
+2. Check internet connection (needs to fetch news from Finnhub)
+3. First load requires downloading 438MB model (be patient)
+4. Check terminal for FinBERT loading logs
 
 ## 📊 Example API Calls
 
@@ -218,7 +272,38 @@ Expected output:
 }
 ```
 
-## �️ Development
+### Get News Sentiment (Market Overview)
+```powershell
+Invoke-WebRequest -Uri "http://localhost:8000/api/v1/sentiment/market-overview" -UseBasicParsing | Select-Object -ExpandProperty Content
+```
+
+Expected output:
+```json
+{
+  "overall_sentiment": "bullish",
+  "market_mood": "Positive",
+  "sentiment_score": 0.65,
+  "breakdown": {
+    "positive": 32,
+    "negative": 8,
+    "neutral": 10
+  },
+  "top_bullish": [
+    {"symbol": "RELIANCE", "sentiment": "positive", "score": 0.89},
+    {"symbol": "TCS", "sentiment": "positive", "score": 0.85}
+  ],
+  "top_bearish": [
+    {"symbol": "HDFC", "sentiment": "negative", "score": -0.45}
+  ]
+}
+```
+
+### Get Stock Sentiment
+```powershell
+Invoke-WebRequest -Uri "http://localhost:8000/api/v1/sentiment/stock/RELIANCE" -UseBasicParsing | Select-Object -ExpandProperty Content
+```
+
+## 🔄 Development
 
 ### View Logs
 ```powershell
@@ -231,35 +316,18 @@ docker-compose logs -f api
 
 ### Restart Services
 ```powershell
-# Restart all
-docker-compose restart
-
-# Restart API only
-docker-compose restart api
+# Restart backend server
+# Press Ctrl+C in the terminal running uvicorn, then restart it
+cd C:\Users\ASUS\Desktop\DSFM_PF\indmoney-api
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ### Stop Services
 ```powershell
-# Stop all containers
-docker-compose down
-
-# Stop and remove volumes (clean slate)
-docker-compose down -v
+# Press Ctrl+C in each terminal window running the servers
 ```
 
-### Access Database
-```powershell
-# Connect to PostgreSQL
-docker exec -it indmoney_db psql -U indmoney -d indmoney
-
-# List tables
-\dt
-
-# Query data
-SELECT * FROM assets;
-```
-
-## � Technology Stack
+## 💾 Technology Stack
 
 | Component | Technology | Version | Purpose |
 |-----------|-----------|---------|---------|
@@ -268,35 +336,49 @@ SELECT * FROM assets;
 | **Analytics Charts** | Chart.js | 4.4.0 | ML visualizations |
 | **Backend** | FastAPI | Latest | REST API |
 | **Server** | Uvicorn | Latest | ASGI server |
-| **Language** | Python | 3.11 | Core logic |
-| **Database** | PostgreSQL | 15-alpine | Persistence |
-| **Cache** | Redis | 7-alpine | Caching |
+| **Language** | Python | 3.12 | Core logic |
+| **Database** | SQLite | Built-in | Persistence |
 | **ML - Clustering** | scikit-learn | 1.3.2 | K-Means |
 | **ML - Forecasting** | arch | 6.2.0 | GARCH |
+| **ML - Sentiment** | FinBERT + PyTorch | Latest | News sentiment |
+| **NLP Model** | ProsusAI/finbert | Pre-trained | Financial sentiment |
+| **Transformers** | Hugging Face | 4.50.3 | Model loading |
 | **Data Processing** | numpy, pandas | Latest | Numerical ops |
-| **Market Data** | Finnhub API | v1 | Live quotes |
-| **Containerization** | Docker | Latest | Deployment |
+| **Market Data** | Finnhub API | v1 | Live quotes & news |
 
 ## 🎯 Project Status
 
 ✅ **COMPLETED FEATURES**
-- Full-stack architecture with Docker
-- GARCH(1,1) volatility forecasting
-- K-Means market regime detection (4 clusters)
-- Real-time WebSocket streaming
-- Interactive trading charts
+- Full-stack architecture with Python (No Docker required!)
+- GARCH(1,1) volatility forecasting (30-day predictions)
+- K-Means market regime detection (4 clusters: Bull/Bear/High Vol/Consolidation)
+- **FinBERT sentiment analysis** (ProsusAI model)
+- **News sentiment modal** with market overview
+- Real-time WebSocket streaming (2-second updates)
+- Interactive trading charts (Lightweight Charts)
 - Analysis dashboard with ML insights
 - INDmoney-style responsive UI
+- SQLite database (zero configuration)
+- Stock filtering by NIFTY 50 / SENSEX
 - Consistent analytics (deterministic results)
+- Finnhub API integration for news
 
 🔮 **FUTURE ENHANCEMENTS**
-- FinBERT sentiment analysis
-- LLM-powered market commentary
-- User authentication & portfolios
-- More stocks (beyond NIFTY/SENSEX)
-- Backtesting engine
+- LLM-powered market commentary (GPT integration)
+- User authentication & portfolio tracking
+- More stocks (expand beyond NIFTY/SENSEX)
+- Backtesting engine for strategies
 - Mobile app (React Native)
 - NSE/BSE official data integration
+- Real-time alerts and notifications
+- Technical indicators (MACD, Bollinger Bands, etc.)
+
+## 🔑 API Keys
+
+This project uses **Finnhub API** for market data and news:
+- Free tier: 60 calls/minute
+- Sign up: https://finnhub.io/register
+- Current API key configured in `sentiment_analyzer.py`
 
 ## 📞 Support
 
@@ -306,11 +388,15 @@ SELECT * FROM assets;
 3. Review API docs at http://localhost:8000/docs
 
 ### Project Structure
-- `indmoney-api/` - Complete backend code
-- `index.html` - Frontend application
-- `script.js` - Client-side logic
-- `styles.css` - UI styling
-- `docker-compose.yml` - Service orchestration
+- `indmoney-api/` - Complete backend code with FastAPI
+  - `app/api/` - REST API endpoints (analytics, sentiment, assets, websocket)
+  - `app/services/` - Business logic (FinBERT analyzer, Finnhub client)
+  - `app/models/` - SQLAlchemy database models
+  - `app/core/` - Configuration and database setup
+- `index.html` - Frontend application (single-page app)
+- `script.js` - Client-side logic (3185 lines with sentiment analysis)
+- `styles.css` - UI styling (3290 lines with modal styles)
+- `serve.py` - Simple HTTP server for frontend
 
 ## 🎓 Learning Resources
 - FastAPI: https://fastapi.tiangolo.com
@@ -318,9 +404,26 @@ SELECT * FROM assets;
 - GARCH Models: https://arch.readthedocs.io/
 - K-Means Clustering: https://scikit-learn.org/stable/modules/clustering.html
 - WebSocket Protocol: https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
+- FinBERT Model: https://huggingface.co/ProsusAI/finbert
+- Transformers Library: https://huggingface.co/docs/transformers/
+- Finnhub API: https://finnhub.io/docs/api
+
+## 📁 Key Files
+
+### Backend
+- `indmoney-api/app/services/sentiment_analyzer.py` - FinBERT implementation (340 lines)
+- `indmoney-api/app/api/sentiment.py` - Sentiment API endpoints (213 lines)
+- `indmoney-api/app/api/analytics.py` - K-Means & GARCH endpoints
+- `indmoney-api/app/main.py` - FastAPI application entry point
+
+### Frontend
+- `script.js` - Complete app logic with sentiment module (lines 2979-3185)
+- `index.html` - News sentiment modal (lines 600-695)
+- `styles.css` - Modal styling (lines 2889-3290)
 
 ---
 
-**Status**: ✅ Fully functional prototype ready for demonstration
-**Last Updated**: October 31, 2025
+**Status**: ✅ Fully functional with AI-powered sentiment analysis
+**Last Updated**: November 13, 2025
+**Version**: 2.0 (Added FinBERT Sentiment Analysis)
 **Team**: Deepu James, Yaksh Rohilla, Mukund Madhav Agarwal, Aarav Pratap Singh
